@@ -49,6 +49,16 @@ void displayWorker() {
     digitalWrite(TFT_BL,TFT_BACKLIGHT_ON);
     TS_Point p=ts.getPoint(); }
 
+  static uint64_t buttonLeftTimer;
+  if (!digitalRead(buttonLeft) && millis()>=buttonLeftTimer) {
+    buttonLeftTimer=millis()+500;
+    if (seq.playing) { stopPlayingSequence(); } else { startPlayingSequence(); } }
+
+  static uint64_t buttonRightTimer;
+  if (!digitalRead(buttonRight) && millis()>=buttonRightTimer) {
+    buttonRightTimer=millis()+500;
+    if (seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); } }
+
   static int knob=0;
   static long oldLeft=0;
   static long oldRight=0;
