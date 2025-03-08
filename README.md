@@ -31,3 +31,6 @@ Teensy 4.1 based polyphonic Synthesizer with Display
 * GPIO 28 - A
 * GPIO 25 - B
 * GPIO 29 - Button
+#### Development Hardware
+![IMAGE ALT TEXT HERE](documentation/hexaTron_a.png)
+![IMAGE ALT TEXT HERE](documentation/hexaTron_b.png)
