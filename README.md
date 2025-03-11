@@ -34,3 +34,5 @@ Teensy 4.1 based polyphonic Synthesizer with Display
 #### Development Hardware
 ![IMAGE ALT TEXT HERE](documentation/hexaTron_a.png)
 ![IMAGE ALT TEXT HERE](documentation/hexaTron_b.png)
+#### Schematic
+![IMAGE ALT TEXT HERE](documentation/hexaTron.png)
