@@ -3,7 +3,7 @@ void startPlayingSequence() {
   seq.position=0;
   seq.playing=true;
   seq.recording=false;
-  seq.baseTimer=millis(); }
+  seq.baseTimer=millis()-sequence[0].timer; }
 
 void stopPlayingSequence() {
   if (seq.playing) { seq.playing=false; }

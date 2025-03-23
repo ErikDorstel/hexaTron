@@ -216,11 +216,11 @@ void doArpeggiator() {
         if (arpMode[arpIndex] == 2) { arpMode[arpIndex]=0; dostopPlayNote(arpChannel[arpIndex], arpTone[arpIndex], arpVelo[arpIndex]); } } } } }
 
 void MIDIsetNoteOn(byte channel, byte tone, byte velocity) {
-  if (seq.recording==true) { sequence[seq.position].timer=millis()-seq.baseTimer; sequence[seq.position].note=tone;  sequence[seq.position].velocity=velocity; seq.position++; if (seq.position>98) { sequence[seq.position].note=255; seq.recording=false; } }
+  if (seq.recording==true) { sequence[seq.position].timer=millis()-seq.baseTimer; sequence[seq.position].note=tone; sequence[seq.position].velocity=velocity; seq.position++; if (seq.position>98) { sequence[seq.position].note=255; seq.recording=false; } }
   if (potArpspeed<500) { setArpeggiator(1,channel,tone,velocity); } else { dostartPlayNote(channel, tone, velocity); } }
 
 void MIDIsetNoteOff(byte channel, byte tone, byte velocity) {
-  if (seq.recording==true) { sequence[seq.position].timer=millis()-seq.baseTimer; sequence[seq.position].note=tone+128;  sequence[seq.position].velocity=velocity; seq.position++; if (seq.position>98) { sequence[seq.position].note=255; seq.recording=false; } }
+  if (seq.recording==true) { sequence[seq.position].timer=millis()-seq.baseTimer; sequence[seq.position].note=tone+128; sequence[seq.position].velocity=velocity; seq.position++; if (seq.position>98) { sequence[seq.position].note=255; seq.recording=false; } }
   if (potArpspeed<500) { setArpeggiator(2,channel,tone,velocity); } else { dostopPlayNote(channel, tone, velocity); } }
 
 void initSynth() {
