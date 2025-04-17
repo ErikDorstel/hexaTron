@@ -72,4 +72,16 @@ void displayWorker() {
   if (knobValue[knob]>127) { knobValue[knob]=0; }
   if (oldLeft!=newLeft || oldRight!=newRight) { blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON); setDisplay(knob); }
   if (oldRight!=newRight) { MIDIsetControl(0,knob,knobValue[knob]); }
-  oldLeft=newLeft; oldRight=newRight; }
+  oldLeft=newLeft; oldRight=newRight;
+
+  int packetSize=Udp.parsePacket();
+  if (packetSize==2) {
+    char receiveBuffer[2];
+    Udp.read(receiveBuffer,2);
+    knob=receiveBuffer[0]-1;
+    if (receiveBuffer[1]==1) { knobValue[knob]+=1; }
+    if (receiveBuffer[1]==2) { knobValue[knob]-=1; }
+    if (knobValue[knob]<0) { knobValue[knob]=127; }
+    if (knobValue[knob]>127) { knobValue[knob]=0; }
+    blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON); setDisplay(knob);
+    MIDIsetControl(0,knob,knobValue[knob]); } }

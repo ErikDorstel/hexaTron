@@ -2,14 +2,14 @@ const bool logging=true;
 
 #include "synthesizer.h"
 #include "sequencer.h"
-#include "display.h"
 #include "eth.h"
+#include "display.h"
 
 void setup() {
   if (logging) { Serial.begin(115200); }
 
   initSynth();
-  initDisplay();
-  initEth(); }
+  initEth();
+  initDisplay(); }
 
-void loop() { synthWorker(); displayWorker(); ethWorker(); sequenceWorker(); }
+void loop() { synthWorker(); ethWorker(); displayWorker(); sequenceWorker(); }
