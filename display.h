@@ -78,7 +78,7 @@ void displayWorker() {
   if (packetSize==2) {
     char receiveBuffer[2];
     Udp.read(receiveBuffer,2);
-    knob=receiveBuffer[0]-1;
+    knob=receiveBuffer[0];
     if (receiveBuffer[1]==1) { knobValue[knob]+=1; }
     if (receiveBuffer[1]==2) { knobValue[knob]-=1; }
     if (knobValue[knob]<0) { knobValue[knob]=127; }
