@@ -74,8 +74,8 @@ void displayWorker() {
   if (oldRight!=newRight) { MIDIsetControl(0,knob,knobValue[knob]); }
   oldLeft=newLeft; oldRight=newRight;
 
-  int packetSize=Udp.parsePacket();
-  if (packetSize==2) {
+  if (!ethConfigured) { return; }
+  if (Udp.parsePacket()==2) {
     char receiveBuffer[2];
     Udp.read(receiveBuffer,2);
     knob=receiveBuffer[0];
