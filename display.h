@@ -79,8 +79,8 @@ void displayWorker() {
     char receiveBuffer[2];
     Udp.read(receiveBuffer,2);
     knob=receiveBuffer[0];
-    if (receiveBuffer[1]==1) { knobValue[knob]+=1; }
-    if (receiveBuffer[1]==2) { knobValue[knob]-=1; }
+    if (receiveBuffer[1]==2) { knobValue[knob]+=1; }
+    if (receiveBuffer[1]==3) { knobValue[knob]-=1; }
     if (knobValue[knob]<0) { knobValue[knob]=127; }
     if (knobValue[knob]>127) { knobValue[knob]=0; }
     blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON); setDisplay(knob);
