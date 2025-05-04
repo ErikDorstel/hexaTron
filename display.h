@@ -14,7 +14,7 @@ const char *knobText[32]={"Attack","Hold","Decay","Sustain","Release","Arpeggiat
   "VCO 1 Waveform","VCO 2 Waveform","VCO 1/2 Ratio","VCO 1/2 Add/Multiply","VCO 2 Shift","VCO 1+2 Level","","",\
   "LFO VCO Waveform","LFO VCO Phase Start","LFO VCO Level","LFO VCO Frequency","VCF Bypass","VCF Lowpass","VCF Bandpass","VCF Highpass",\
   "LFO VCF Waveform","LFO VCF Phase Start","LFO VCF Level","LFO VCF Frequency","VCF Frequency","VCF Resonance","",""};
-int knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
+uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
 
 void printDisplay(uint8_t knob) {
   tft.setCursor(knob%4*120,knob/4*35);
@@ -44,7 +44,7 @@ void initDisplay() {
   pinMode(buttonLeft,INPUT_PULLUP);
   pinMode(buttonRight,INPUT_PULLUP);
 
-  for (int i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); setDisplay(i); }
+  for (uint8_t i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); setDisplay(i); }
   setDisplay(0); }
 
 void displayWorker() {
@@ -66,29 +66,27 @@ void displayWorker() {
     buttonRightTimer=millis()+500;
     if (seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); } }
 
-  static int knob=0;
+  static uint8_t knob=0;
   static long oldLeft=0;
   static long oldRight=0;
   long newLeft=knobLeft.read()/4;
   long newRight=knobRight.read()/4;
   knob+=newLeft-oldLeft;
   knobValue[knob]+=newRight-oldRight;
-  if (knob<0) { knob=31; }
-  if (knob>31) { knob=0; }
-  if (knobValue[knob]<0) { knobValue[knob]=127; }
-  if (knobValue[knob]>127) { knobValue[knob]=0; }
+  knob=knob&0x1F;
+  knobValue[knob]=knobValue[knob]&0x7F;
   if (oldLeft!=newLeft || oldRight!=newRight) { blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON); setDisplay(knob); }
   if (oldRight!=newRight) { MIDIsetControl(0,knob,knobValue[knob]); }
   oldLeft=newLeft; oldRight=newRight;
 
-  if (!ethConfigured) { return; }
-  if (Udp.parsePacket()==2) {
-    char receiveBuffer[2];
-    Udp.read(receiveBuffer,2);
-    knob=receiveBuffer[0];
-    if (receiveBuffer[1]==2) { knobValue[knob]+=1; }
-    if (receiveBuffer[1]==3) { knobValue[knob]-=1; }
-    if (knobValue[knob]<0) { knobValue[knob]=127; }
-    if (knobValue[knob]>127) { knobValue[knob]=0; }
-    blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON); setDisplay(knob);
-    MIDIsetControl(0,knob,knobValue[knob]); } }
+  if (ethConfigured) {
+    if (Udp.parsePacket()==2) {
+      char receiveBuffer[2];
+      Udp.read(receiveBuffer,2);
+      knob=receiveBuffer[0];
+      if (receiveBuffer[1]==1) { knobValue[knob]+=32; } else
+      if (receiveBuffer[1]==2) { knobValue[knob]+=1; } else
+      if (receiveBuffer[1]==3) { knobValue[knob]-=1; }
+      knobValue[knob]=knobValue[knob]&0x7F;
+      blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON);
+      setDisplay(knob); MIDIsetControl(0,knob,knobValue[knob]); } } }
