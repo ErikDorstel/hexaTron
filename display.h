@@ -16,15 +16,22 @@ const char *knobText[32]={"Attack","Hold","Decay","Sustain","Release","Arpeggiat
   "LFO VCF Waveform","LFO VCF Phase Start","LFO VCF Level","LFO VCF Frequency","VCF Frequency","VCF Resonance","",""};
 int knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
 
-void setDisplay(uint8_t newLeft) {
-  for (byte i=0;i<32;i++) {
-    if (i==newLeft) { tft.setTextColor(TFT_BLACK,TFT_WHITE); } else { tft.setTextColor(TFT_WHITE,TFT_BLACK); }
-    tft.setCursor(i%4*120,i/4*35);
-    tft.print(knobText[i]);
+void printDisplay(uint8_t knob) {
+  tft.setCursor(knob%4*120,knob/4*35);
+  tft.print(knobText[knob]);
+  tft.setTextColor(TFT_WHITE,TFT_BLACK);
+  tft.setCursor(knob%4*120,knob/4*35+10);
+  tft.print(knobValue[knob]);
+  tft.print("   "); }
+
+void setDisplay(uint8_t knob) {
+  static uint8_t oldKnob;
+  if (oldKnob!=knob) {
     tft.setTextColor(TFT_WHITE,TFT_BLACK);
-    tft.setCursor(i%4*120,i/4*35+10);
-    tft.print(knobValue[i]);
-    tft.print("   "); } }
+    printDisplay(oldKnob); }
+  tft.setTextColor(TFT_BLACK,TFT_WHITE);
+  printDisplay(knob);
+  oldKnob=knob; }
 
 void initDisplay() {
   tft.init();
@@ -37,7 +44,7 @@ void initDisplay() {
   pinMode(buttonLeft,INPUT_PULLUP);
   pinMode(buttonRight,INPUT_PULLUP);
 
-  for (int i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); }
+  for (int i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); setDisplay(i); }
   setDisplay(0); }
 
 void displayWorker() {
