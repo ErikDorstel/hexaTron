@@ -16,21 +16,18 @@ const char *knobText[32]={"Attack","Hold","Decay","Sustain","Release","Arpeggiat
   "LFO VCF Waveform","LFO VCF Phase Start","LFO VCF Level","LFO VCF Frequency","VCF Frequency","VCF Resonance","",""};
 uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
 
-void printDisplay(uint8_t knob) {
-  tft.setCursor(knob%4*120,knob/4*35);
-  tft.print(knobText[knob]);
-  tft.setTextColor(TFT_WHITE,TFT_BLACK);
-  tft.setCursor(knob%4*120,knob/4*35+10);
-  tft.print(knobValue[knob]);
-  tft.print("   "); }
-
 void setDisplay(uint8_t knob) {
   static uint8_t oldKnob;
   if (oldKnob!=knob) {
     tft.setTextColor(TFT_WHITE,TFT_BLACK);
-    printDisplay(oldKnob); }
-  tft.setTextColor(TFT_BLACK,TFT_WHITE);
-  printDisplay(knob);
+    tft.setCursor(oldKnob%4*120,oldKnob/4*40);
+    tft.print(knobText[oldKnob]);
+    tft.setTextColor(TFT_BLACK,TFT_WHITE);
+    tft.setCursor(knob%4*120,knob/4*40);
+    tft.print(knobText[knob]);
+    tft.setTextColor(TFT_WHITE,TFT_BLACK); }
+  tft.setCursor(knob%4*120,knob/4*40+10);
+  tft.print(knobValue[knob]); tft.print("  ");
   oldKnob=knob; }
 
 void initDisplay() {
