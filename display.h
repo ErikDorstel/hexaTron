@@ -33,6 +33,14 @@ void setDisplay(uint8_t knob) {
   tft.print(knobValue[knob]); tft.print("  ");
   oldKnob=knob; }
 
+void setTFTBL(bool blActive=false) {
+  static uint64_t blTimer=millis()+60000UL;
+  static uint8_t blValue=255;
+  if (blActive) { blTimer=millis()+60000UL; blValue=255; analogWrite(TFT_BL,blValue); }
+  if (millis()>=blTimer) {
+    if (blValue<10) { blValue=0; } else { blValue-=10; blTimer=millis()+50; }
+    analogWrite(TFT_BL,blValue); } }
+
 void initDisplay() {
   tft.init();
   tft.setRotation(3);
@@ -48,12 +56,10 @@ void initDisplay() {
   setDisplay(0); }
 
 void displayWorker() {
-  static uint64_t blTimer=millis()+60000UL;
-  if (millis()>=blTimer) { digitalWrite(TFT_BL,!TFT_BACKLIGHT_ON); }
+  setTFTBL();
 
   if (ts.touched()) {
-    blTimer=millis()+60000UL;
-    digitalWrite(TFT_BL,TFT_BACKLIGHT_ON);
+    setTFTBL(true);
     TS_Point p=ts.getPoint(); }
 
   static uint64_t buttonLeftTimer;
@@ -75,7 +81,7 @@ void displayWorker() {
   knobValue[knob]+=newRight-oldRight;
   knob=knob&0x1F;
   knobValue[knob]=knobValue[knob]&0x7F;
-  if (oldLeft!=newLeft || oldRight!=newRight) { blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON); setDisplay(knob); }
+  if (oldLeft!=newLeft || oldRight!=newRight) { setTFTBL(true); setDisplay(knob); }
   if (oldRight!=newRight) { MIDIsetControl(0,knob,knobValue[knob]); }
   oldLeft=newLeft; oldRight=newRight;
 
@@ -88,5 +94,5 @@ void displayWorker() {
       if (receiveBuffer[1]==2) { knobValue[knob]+=1; } else
       if (receiveBuffer[1]==3) { knobValue[knob]-=1; }
       knobValue[knob]=knobValue[knob]&0x7F;
-      blTimer=millis()+60000UL; digitalWrite(TFT_BL,TFT_BACKLIGHT_ON);
+      setTFTBL(true);
       setDisplay(knob); MIDIsetControl(0,knob,knobValue[knob]); } } }
