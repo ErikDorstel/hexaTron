@@ -21,15 +21,15 @@ void setDisplay(uint8_t knob) {
   if (oldKnob!=knob) {
     tft.fillRoundRect(oldKnob%4*120,oldKnob/4*40,120,40,10,TFT_WHITE);
     tft.setTextColor(TFT_BLACK,TFT_WHITE);
-    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+5);
+    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+9);
     tft.print(knobText[oldKnob]);
-    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+18);
+    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+22);
     tft.print(knobValue[oldKnob]); tft.print("  ");
     tft.fillRoundRect(knob%4*120,knob/4*40,120,40,10,TFT_SKYBLUE);
-    tft.setTextColor(TFT_WHITE,TFT_SKYBLUE);
-    tft.setCursor(knob%4*120+3,knob/4*40+5);
+    tft.setTextColor(TFT_BLACK,TFT_SKYBLUE);
+    tft.setCursor(knob%4*120+3,knob/4*40+9);
     tft.print(knobText[knob]); }
-  tft.setCursor(knob%4*120+3,knob/4*40+18);
+  tft.setCursor(knob%4*120+3,knob/4*40+22);
   tft.print(knobValue[knob]); tft.print("  ");
   oldKnob=knob; }
 
