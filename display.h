@@ -11,7 +11,7 @@ Encoder knobRight(28,25);
 #define buttonRight 29
 
 const char *knobText[32]={"Attack","Hold","Decay","Sustain","Release","Arpeggiator Mode","Arpeggiator Speed","Glissando Speed",\
-  "VCO 1 Waveform","VCO 2 Waveform","VCO 1/2 Ratio","VCO 1/2 Add/Multiply","VCO 2 Shift","VCO 1+2 Level","","",\
+  "VCO 1 Waveform","VCO 2 Waveform","VCO Ratio","VCO Add/Multiply","VCO 2 Shift","VCO Level","","",\
   "LFO VCO Waveform","LFO VCO Phase Start","LFO VCO Level","LFO VCO Frequency","VCF Bypass","VCF Lowpass","VCF Bandpass","VCF Highpass",\
   "LFO VCF Waveform","LFO VCF Phase Start","LFO VCF Level","LFO VCF Frequency","VCF Frequency","VCF Resonance","",""};
 uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
@@ -19,21 +19,24 @@ uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,12
 void setDisplay(uint8_t knob) {
   static uint8_t oldKnob;
   if (oldKnob!=knob) {
-    tft.setTextColor(TFT_WHITE,TFT_BLACK);
-    tft.setCursor(oldKnob%4*120,oldKnob/4*40);
-    tft.print(knobText[oldKnob]);
+    tft.fillRoundRect(oldKnob%4*120,oldKnob/4*40,120,40,10,TFT_WHITE);
     tft.setTextColor(TFT_BLACK,TFT_WHITE);
-    tft.setCursor(knob%4*120,knob/4*40);
-    tft.print(knobText[knob]);
-    tft.setTextColor(TFT_WHITE,TFT_BLACK); }
-  tft.setCursor(knob%4*120,knob/4*40+10);
+    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+5);
+    tft.print(knobText[oldKnob]);
+    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+18);
+    tft.print(knobValue[oldKnob]); tft.print("  ");
+    tft.fillRoundRect(knob%4*120,knob/4*40,120,40,10,TFT_SKYBLUE);
+    tft.setTextColor(TFT_WHITE,TFT_SKYBLUE);
+    tft.setCursor(knob%4*120+3,knob/4*40+5);
+    tft.print(knobText[knob]); }
+  tft.setCursor(knob%4*120+3,knob/4*40+18);
   tft.print(knobValue[knob]); tft.print("  ");
   oldKnob=knob; }
 
 void initDisplay() {
   tft.init();
   tft.setRotation(3);
-  tft.fillScreen(TFT_BLACK);
+  tft.fillScreen(TFT_WHITE);
 
   ts.begin(SPI1);
   ts.setRotation(1);
