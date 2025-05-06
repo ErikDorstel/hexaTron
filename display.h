@@ -16,22 +16,32 @@ const char *knobText[32]={"Attack","Hold","Decay","Sustain","Release","Arpeggiat
   "LFO VCF Waveform","LFO VCF Phase Start","LFO VCF Level","LFO VCF Frequency","VCF Frequency","VCF Resonance","",""};
 uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
 
-void setDisplay(uint8_t knob) {
-  static uint8_t oldKnob;
-  if (oldKnob!=knob) {
-    tft.fillRoundRect(oldKnob%4*120,oldKnob/4*40,120,40,10,TFT_WHITE);
-    tft.setTextColor(TFT_BLACK,TFT_WHITE);
-    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+9);
-    tft.print(knobText[oldKnob]);
-    tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+22);
-    tft.print(knobValue[oldKnob]); tft.print("  ");
-    tft.fillRoundRect(knob%4*120,knob/4*40,120,40,10,TFT_SKYBLUE);
-    tft.setTextColor(TFT_BLACK,TFT_SKYBLUE);
-    tft.setCursor(knob%4*120+3,knob/4*40+9);
-    tft.print(knobText[knob]); }
-  tft.setCursor(knob%4*120+3,knob/4*40+22);
-  tft.print(knobValue[knob]); tft.print("  ");
-  oldKnob=knob; }
+void setDisplay(uint8_t page,uint8_t knob) {
+  static uint8_t oldPage=255,oldKnob=1;
+  if (oldPage!=page) {
+    if (page==0) {
+      tft.fillScreen(TFT_WHITE);
+      for (uint8_t i=0;i<32;i++) {
+        tft.setTextColor(TFT_BLACK,TFT_WHITE);
+        tft.setCursor(i%4*120+3,i/4*40+9);
+        tft.print(knobText[i]);
+        tft.setCursor(i%4*120+3,i/4*40+22);
+        tft.print(knobValue[knob]); tft.print("  "); } } }
+  if (page==0) {
+    if (oldKnob!=knob) {
+      tft.fillRoundRect(oldKnob%4*120,oldKnob/4*40,120,40,10,TFT_WHITE);
+      tft.setTextColor(TFT_BLACK,TFT_WHITE);
+      tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+9);
+      tft.print(knobText[oldKnob]);
+      tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+22);
+      tft.print(knobValue[oldKnob]); tft.print("  ");
+      tft.fillRoundRect(knob%4*120,knob/4*40,120,40,10,TFT_SKYBLUE);
+      tft.setTextColor(TFT_BLACK,TFT_SKYBLUE);
+      tft.setCursor(knob%4*120+3,knob/4*40+9);
+      tft.print(knobText[knob]); }
+    tft.setCursor(knob%4*120+3,knob/4*40+22);
+    tft.print(knobValue[knob]); tft.print("  "); }
+  oldPage=page; oldKnob=knob; }
 
 void setTFTBL(bool blActive=false) {
   static uint64_t blTimer=millis()+60000UL;
@@ -44,7 +54,6 @@ void setTFTBL(bool blActive=false) {
 void initDisplay() {
   tft.init();
   tft.setRotation(3);
-  tft.fillScreen(TFT_WHITE);
 
   ts.begin(SPI1);
   ts.setRotation(1);
@@ -52,8 +61,8 @@ void initDisplay() {
   pinMode(buttonLeft,INPUT_PULLUP);
   pinMode(buttonRight,INPUT_PULLUP);
 
-  for (uint8_t i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); setDisplay(i); }
-  setDisplay(0); }
+  for (uint8_t i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); }
+  setDisplay(0,0); }
 
 void displayWorker() {
   setTFTBL();
@@ -72,16 +81,15 @@ void displayWorker() {
     buttonRightTimer=millis()+500;
     if (seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); } }
 
-  static uint8_t knob=0;
-  static long oldLeft=0;
-  static long oldRight=0;
+  static uint8_t page=0,knob=0;
+  static long oldLeft=0,oldRight=0;
   long newLeft=knobLeft.read()/4;
   long newRight=knobRight.read()/4;
   knob+=newLeft-oldLeft;
   knobValue[knob]+=newRight-oldRight;
   knob=knob&0x1F;
   knobValue[knob]=knobValue[knob]&0x7F;
-  if (oldLeft!=newLeft || oldRight!=newRight) { setTFTBL(true); setDisplay(knob); }
+  if (oldLeft!=newLeft || oldRight!=newRight) { setTFTBL(true); setDisplay(page,knob); }
   if (oldRight!=newRight) { MIDIsetControl(0,knob,knobValue[knob]); }
   oldLeft=newLeft; oldRight=newRight;
 
@@ -95,4 +103,4 @@ void displayWorker() {
       if (receiveBuffer[1]==3) { knobValue[knob]-=1; }
       knobValue[knob]=knobValue[knob]&0x7F;
       setTFTBL(true);
-      setDisplay(knob); MIDIsetControl(0,knob,knobValue[knob]); } } }
+      setDisplay(0,knob); MIDIsetControl(0,knob,knobValue[knob]); } } }
