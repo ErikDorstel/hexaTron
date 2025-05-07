@@ -106,10 +106,8 @@ void displayWorker() {
   static long oldLeft=0,oldRight=0;
   long newLeft=knobLeft.read()/4;
   long newRight=knobRight.read()/4;
-  knob+=newLeft-oldLeft;
-  knobValue[knob]+=newRight-oldRight;
-  if (oldLeft!=newLeft || oldRight!=newRight) { setTFTBL(true); setDisplay(); }
-  if (oldRight!=newRight) { MIDIsetControl(0,knob,knobValue[knob]); }
+  if (oldLeft!=newLeft) { knob+=newLeft-oldLeft; setTFTBL(true); setDisplay(); }
+  if (page==0 && oldRight!=newRight) { knobValue[knob]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
   oldLeft=newLeft; oldRight=newRight;
 
   if (ethConfigured) {
