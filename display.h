@@ -19,27 +19,23 @@ uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,12
 uint8_t page=0,knob=0,oldPage=255,oldKnob=1;
 
 void setDisplay() {
-  page=page&0x1;
-  if (page==0) { knob=knob&0x1F; oldKnob=oldKnob&0x1F; }
-  if (page==1) { knob=knob&0x1; oldKnob=oldKnob&0x1; }
-  knobValue[knob]=knobValue[knob]&0x7F;
+  page=page&0x1; knobValue[knob]=knobValue[knob]&0x7F;
   if (oldPage!=page) {
     knob=0; oldKnob=1;
+    tft.fillScreen(TFT_WHITE);
+    tft.setTextColor(TFT_BLACK,TFT_WHITE);
     if (page==0) {
-      tft.fillScreen(TFT_WHITE);
       for (uint8_t i=0;i<32;i++) {
-        tft.setTextColor(TFT_BLACK,TFT_WHITE);
         tft.setCursor(i%4*120+3,i/4*40+9);
         tft.print(knobText[0][i]);
         tft.setCursor(i%4*120+3,i/4*40+22);
-        tft.print(knobValue[i]); tft.print("  "); } }
+        tft.print(knobValue[i]); } }
     if (page==1) {
-      tft.fillScreen(TFT_WHITE);
       for (uint8_t i=0;i<2;i++) {
-        tft.setTextColor(TFT_BLACK,TFT_WHITE);
         tft.setCursor(i%4*120+3,i/4*40+9);
         tft.print(knobText[1][i]); } } }
   if (page==0) {
+    knob=knob&0x1F; oldKnob=oldKnob&0x1F;
     if (oldKnob!=knob) {
       tft.fillRoundRect(oldKnob%4*120,oldKnob/4*40,120,40,10,TFT_WHITE);
       tft.setTextColor(TFT_BLACK,TFT_WHITE);
@@ -54,6 +50,7 @@ void setDisplay() {
     tft.setCursor(knob%4*120+3,knob/4*40+22);
     tft.print(knobValue[knob]); tft.print("  "); }
   if (page==1) {
+    knob=knob&0x1; oldKnob=oldKnob&0x1;
     if (oldKnob!=knob) {
       tft.fillRoundRect(oldKnob%4*120,oldKnob/4*40,120,40,10,TFT_WHITE);
       tft.setTextColor(TFT_BLACK,TFT_WHITE);
