@@ -18,10 +18,10 @@ const char *knobText[2][32]={{"Attack","Hold","Decay","Sustain","Release","Arpeg
 uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
 uint8_t page=0,knob=0,oldPage=255,oldKnob=1;
 
-void setDisplay() {
+void setDisplay(bool direct=false) {
   page=page&0x1; knobValue[knob]=knobValue[knob]&0x7F;
   if (oldPage!=page) {
-    knob=0; oldKnob=1;
+    if (direct==false) { knob=0; } oldKnob=1;
     tft.fillScreen(TFT_WHITE);
     tft.setTextColor(TFT_BLACK,TFT_WHITE);
     if (page==0) {
@@ -119,4 +119,4 @@ void displayWorker() {
       if (receiveBuffer[1]==1) { knobValue[knob]+=32; } else
       if (receiveBuffer[1]==2) { knobValue[knob]+=1; } else
       if (receiveBuffer[1]==3) { knobValue[knob]-=1; }
-      setTFTBL(true); page=0; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); } } }
+      setTFTBL(true); page=0; setDisplay(true); MIDIsetControl(0,knob,knobValue[knob]); } } }
