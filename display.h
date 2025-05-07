@@ -93,11 +93,12 @@ void displayWorker() {
   static uint64_t buttonLeftTimer;
   if (!digitalRead(buttonLeft) && millis()>=buttonLeftTimer) {
     buttonLeftTimer=millis()+500;
-    page+=1; setDisplay(); }
+    setTFTBL(true); page+=1; setDisplay(); }
 
   static uint64_t buttonRightTimer;
   if (!digitalRead(buttonRight) && millis()>=buttonRightTimer) {
     buttonRightTimer=millis()+500;
+    setTFTBL(true);
     if (page==0) { knobValue[knob]+=32; setDisplay(); }
     if (page==1 && knob==0 && seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); }
     if (page==1 && knob==1 && seq.playing) { stopPlayingSequence(); } else { startPlayingSequence(); } }
