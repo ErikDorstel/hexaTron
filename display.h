@@ -29,7 +29,9 @@ void setDisplay(bool direct=false) {
         tft.setCursor(i%4*120+3,i/4*40+9);
         tft.print(knobText[0][i]);
         tft.setCursor(i%4*120+3,i/4*40+22);
-        tft.print(knobValue[i]); } }
+        tft.print(knobValue[i]);
+        tft.fillRect(i%4*120+28,i/4*40+24,knobValue[i]/2,3,TFT_BLACK);
+        tft.fillRect(i%4*120+28+(knobValue[i]/2),i/4*40+24,63-(knobValue[i]/2),3,TFT_SKYBLUE); } }
     if (page==1) {
       for (uint8_t i=0;i<2;i++) {
         tft.setCursor(i%4*120+3,i/4*40+9);
@@ -43,12 +45,16 @@ void setDisplay(bool direct=false) {
       tft.print(knobText[0][oldKnob]);
       tft.setCursor(oldKnob%4*120+3,oldKnob/4*40+22);
       tft.print(knobValue[oldKnob]); tft.print("  ");
+      tft.fillRect(oldKnob%4*120+28,oldKnob/4*40+24,knobValue[oldKnob]/2,3,TFT_BLACK);
+      tft.fillRect(oldKnob%4*120+28+(knobValue[oldKnob]/2),oldKnob/4*40+24,63-(knobValue[oldKnob]/2),3,TFT_SKYBLUE);
       tft.fillRoundRect(knob%4*120,knob/4*40,120,40,10,TFT_SKYBLUE);
       tft.setTextColor(TFT_BLACK,TFT_SKYBLUE);
       tft.setCursor(knob%4*120+3,knob/4*40+9);
       tft.print(knobText[0][knob]); }
     tft.setCursor(knob%4*120+3,knob/4*40+22);
-    tft.print(knobValue[knob]); tft.print("  "); }
+    tft.print(knobValue[knob]); tft.print("  ");
+    tft.fillRect(knob%4*120+28,knob/4*40+24,knobValue[knob]/2,3,TFT_BLACK);
+    tft.fillRect(knob%4*120+28+(knobValue[knob]/2),knob/4*40+24,63-(knobValue[knob]/2),3,TFT_WHITE); }
   if (page==1) {
     knob=knob&0x1; oldKnob=oldKnob&0x1;
     if (oldKnob!=knob) {
