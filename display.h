@@ -20,12 +20,13 @@ uint8_t page=0,knob=0,oldPage=255,oldKnob=1;
 
 void setAHDSR(bool clear=true) {
   static uint16_t oldax,oldhx,olddx,oldsx,oldsy,oldrx;
-  uint16_t ax=knobValue[0];
-  uint16_t hx=ax+knobValue[1];
-  uint16_t dx=hx+knobValue[2];
-  uint16_t sx=dx+100;
-  uint16_t sy=300-(knobValue[3]*200/127);
-  uint16_t rx=sx+knobValue[4];
+  uint16_t x=knobValue[0]+knobValue[1]+knobValue[2]+25+knobValue[4];
+  uint16_t ax=knobValue[0]*480/x;
+  uint16_t hx=ax+knobValue[1]*480/x;
+  uint16_t dx=hx+knobValue[2]*480/x;
+  uint16_t sx=dx+25*480/x;
+  uint16_t sy=300-knobValue[3]*200/127;
+  uint16_t rx=sx+knobValue[4]*480/x;
   if (clear) {
     tft.drawWideLine(0,300,oldax,100,3,TFT_WHITE,TFT_WHITE);
     tft.drawWideLine(oldax,100,oldhx,100,3,TFT_WHITE,TFT_WHITE);
