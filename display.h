@@ -19,21 +19,20 @@ uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,12
 uint8_t page=0,knob=0,oldPage=255,oldKnob=1;
 
 void setAHDSR(bool clear=true) {
-  static uint16_t oldx,oldax,oldhx,olddx,oldsx,oldsy,oldrx;
+  static uint16_t oldx,oldax,oldhx,olddx,oldsx,oldsy;
   uint16_t x=knobValue[0]+knobValue[1]+knobValue[2]+25+knobValue[4];
   uint16_t ax=knobValue[0]*480/x;
   uint16_t hx=ax+knobValue[1]*480/x;
   uint16_t dx=hx+knobValue[2]*480/x;
   uint16_t sx=dx+25*480/x;
   uint16_t sy=300-knobValue[3]*200/127;
-  uint16_t rx=sx+knobValue[4]*480/x;
   if (oldx+oldsy==x+sy && clear) { return; }
   if (clear) {
     tft.drawWideLine(0,300,oldax,100,3,TFT_WHITE,TFT_WHITE);
     tft.drawWideLine(oldax,100,oldhx,100,3,TFT_WHITE,TFT_WHITE);
     tft.drawWideLine(oldhx,100,olddx,oldsy,3,TFT_WHITE,TFT_WHITE);
     tft.drawWideLine(olddx,oldsy,oldsx,oldsy,3,TFT_WHITE,TFT_WHITE);
-    tft.drawWideLine(oldsx,oldsy,oldrx,300,3,TFT_WHITE,TFT_WHITE);
+    tft.drawWideLine(oldsx,oldsy,479,300,3,TFT_WHITE,TFT_WHITE);
     tft.drawLine(0,300,479,300,TFT_WHITE);
     tft.drawLine(oldax,95,oldax,305,TFT_WHITE);
     tft.drawLine(oldhx,95,oldhx,305,TFT_WHITE);
@@ -43,13 +42,13 @@ void setAHDSR(bool clear=true) {
   tft.drawWideLine(ax,100,hx,100,3,TFT_SKYBLUE,TFT_WHITE);
   tft.drawWideLine(hx,100,dx,sy,3,TFT_SKYBLUE,TFT_WHITE);
   tft.drawWideLine(dx,sy,sx,sy,3,TFT_SKYBLUE,TFT_WHITE);
-  tft.drawWideLine(sx,sy,rx,300,3,TFT_SKYBLUE,TFT_WHITE);
+  tft.drawWideLine(sx,sy,479,300,3,TFT_SKYBLUE,TFT_WHITE);
   tft.drawLine(0,300,479,300,TFT_BLACK);
   tft.drawLine(ax,95,ax,305,TFT_BLACK);
   tft.drawLine(hx,95,hx,305,TFT_BLACK);
   tft.drawLine(dx,sy-5,dx,305,TFT_BLACK);
   tft.drawLine(sx,sy-5,sx,305,TFT_BLACK);
-  oldx=x; oldax=ax; oldhx=hx; olddx=dx; oldsx=sx; oldsy=sy; oldrx=rx; }
+  oldx=x; oldax=ax; oldhx=hx; olddx=dx; oldsx=sx; oldsy=sy; }
 
 void setDisplay(bool direct=false) {
   if (page>2) { page=0; } knobValue[knob]=knobValue[knob]&0x7F;
