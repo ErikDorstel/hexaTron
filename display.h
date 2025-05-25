@@ -63,15 +63,15 @@ void setVCO(bool clear=true) {
     tft.drawLine(0,200,479,200,TFT_WHITE); }
   for (uint16_t x=0;x<480;x++) {
     float y1=0;
-    if ((knobValue[8]&96)==0) { y1=sin(6.28*x/480); } else
-    if ((knobValue[8]&96)==32) { y1=(float)x/240; if (x>=240) { y1-=2; } } else
-    if ((knobValue[8]&96)==64) { y1=1; if (x>=240) { y1=-1; } } else
-    if ((knobValue[8]&96)==96) { y1=(float)x/120; if (x>=120) { y1=2-y1; } if (x>=360) { y1=-2-y1; } }
+    if ((knobValue[8]&96)==0) { y1=sin(12.56637*x/480); } else
+    if ((knobValue[8]&96)==32) { y1=(float)x/120; if (x>=120) { y1-=2; } if (x>=360) { y1-=2; } } else
+    if ((knobValue[8]&96)==64) { if (x<120) { y1=1; } else if (x<240) { y1=-1; } else if (x<360) { y1=1; } else { y1=-1; } } else
+    if ((knobValue[8]&96)==96) { y1=(float)x/60; if (x>=60) { y1=2-y1; } if (x>=180) { y1=-2-y1; } if (x>=300) { y1=2-y1; } if (x>=420) { y1=-2-y1; } }
     float y2=0;
-    if ((knobValue[9]&96)==0) { y2=sin(6.28*x/480); } else
-    if ((knobValue[9]&96)==32) { y2=(float)x/240; if (x>=240) { y2-=2; } } else
-    if ((knobValue[9]&96)==64) { y2=1; if (x>=240) { y2=-1; } } else
-    if ((knobValue[9]&96)==96) { y2=(float)x/120; if (x>=120) { y2=2-y2; } if (x>=360) { y2=-2-y2; } }
+    if ((knobValue[9]&96)==0) { y2=sin(12.56637*x/480); } else
+    if ((knobValue[9]&96)==32) { y2=(float)x/120; if (x>=120) { y2-=2; } if (x>=360) { y2-=2; } } else
+    if ((knobValue[9]&96)==64) { if (x<120) { y2=1; } else if (x<240) { y2=-1; } else if (x<360) { y2=1; } else { y2=-1; } } else
+    if ((knobValue[9]&96)==96) { y2=(float)x/60; if (x>=60) { y2=2-y2; } if (x>=180) { y2=-2-y2; } if (x>=300) { y2=2-y2; } if (x>=420) { y2=-2-y2; } }
     float ya=(y1*(1.0-((float)knobValue[10]/127.0)))+(y2*((float)knobValue[10]/127.0));
     float ym=(y1*y2);
     float ys=(ya*(1.0-((float)knobValue[11]/127)))+(ym*((float)knobValue[11]/127.0));
