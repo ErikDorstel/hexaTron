@@ -51,27 +51,15 @@ void setAHDSR(bool clear=true) {
   oldx=x; oldax=ax; oldhx=hx; olddx=dx; oldsx=sx; oldsy=sy; }
 
 void setVCO(bool clear=true) {
-  static uint8_t old8,old9,old10,old11; static uint16_t oldx;
+  static uint16_t oldx; static float oldys[480];
   uint16_t x=knobValue[8]+knobValue[9]+knobValue[10]+knobValue[11];
   if (oldx==x && clear) { return; }
   if (clear) {
     for (uint16_t x=0;x<480;x++) {
-      float y1=0;
-      if ((old8&96)==0) { y1=sin(6.28*x/480); } else
-      if ((old8&96)==32) { y1=(float)x/240; if (x>=240) { y1-=2; } } else
-      if ((old8&96)==64) { y1=1; if (x>=240) { y1=-1; } } else
-      if ((old8&96)==96) { y1=(float)x/120; if (x>=120) { y1=2-y1; } if (x>=360) { y1=-2-y1; } }
-      float y2=0;
-      if ((old9&96)==0) { y2=sin(6.28*x/480); } else
-      if ((old9&96)==32) { y2=(float)x/240; if (x>=240) { y2-=2; } } else
-      if ((old9&96)==64) { y2=1; if (x>=240) { y2=-1; } } else
-      if ((old9&96)==96) { y2=(float)x/120; if (x>=120) { y2=2-y2; } if (x>=360) { y2=-2-y2; } }
-      float ya=(y1*(1.0-((float)old10/127.0)))+(y2*((float)old10/127.0));
-      float ym=(y1*y2);
-      float ys=(ya*(1.0-((float)old11/127.0)))+(ym*((float)old11/127.0));
-      tft.drawPixel(x,199-ys*100,TFT_WHITE);
-      tft.drawPixel(x,200-ys*100,TFT_WHITE);
-      tft.drawPixel(x,201-ys*100,TFT_WHITE); }
+      tft.drawPixel(x,199-oldys[x]*100,TFT_WHITE);
+      tft.drawPixel(x,200-oldys[x]*100,TFT_WHITE);
+      tft.drawPixel(x,201-oldys[x]*100,TFT_WHITE);
+      if (x>0 && abs(oldys[x]-oldys[x-1])*100>3) { tft.drawWideLine(x,200-oldys[x]*100,x-1,200-oldys[x-1]*100,3,TFT_WHITE,TFT_WHITE); } }
     tft.drawLine(0,200,479,200,TFT_WHITE); }
   for (uint16_t x=0;x<480;x++) {
     float y1=0;
@@ -87,11 +75,13 @@ void setVCO(bool clear=true) {
     float ya=(y1*(1.0-((float)knobValue[10]/127.0)))+(y2*((float)knobValue[10]/127.0));
     float ym=(y1*y2);
     float ys=(ya*(1.0-((float)knobValue[11]/127)))+(ym*((float)knobValue[11]/127.0));
+    oldys[x]=ys;
     tft.drawPixel(x,199-ys*100,TFT_SKYBLUE);
     tft.drawPixel(x,200-ys*100,TFT_SKYBLUE);
-    tft.drawPixel(x,201-ys*100,TFT_SKYBLUE); }
+    tft.drawPixel(x,201-ys*100,TFT_SKYBLUE);
+    if (x>0 && abs(ys-oldys[x-1])*100>3) { tft.drawWideLine(x,200-ys*100,x-1,200-oldys[x-1]*100,3,TFT_SKYBLUE,TFT_WHITE); } }
   tft.drawLine(0,200,479,200,TFT_BLACK);
-  oldx=x; old8=knobValue[8]; old9=knobValue[9]; old10=knobValue[10]; old11=knobValue[11]; }
+  oldx=x; }
 
 void setDisplay(bool direct=false) {
   if (page>3) { page=0; }
