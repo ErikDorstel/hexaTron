@@ -17,6 +17,7 @@ const char *knobText[2][32]={{"Attack","Hold","Decay","Sustain","Release","Arpeg
   {"Record","Play"}};
 uint8_t knobValue[32]={10,0,0,127,20,0,127,0,40,70,64,64,120,70,0,0,0,0,0,0,0,127,0,0,0,30,70,10,50,40,0,0};
 uint8_t page=0,knob=0,oldPage=255,oldKnob=1;
+float oldys[480]={0};
 
 void setAHDSR(bool clear=true) {
   static uint16_t oldx,oldax,oldhx,olddx,oldsx,oldsy;
@@ -51,7 +52,7 @@ void setAHDSR(bool clear=true) {
   oldx=x; oldax=ax; oldhx=hx; olddx=dx; oldsx=sx; oldsy=sy; }
 
 void setVCO(bool clear=true) {
-  static uint16_t oldx; static float oldys[480];
+  static uint16_t oldx;
   uint16_t x=knobValue[8]+knobValue[9]+knobValue[10]+knobValue[11];
   if (oldx==x && clear) { return; }
   if (clear) {
@@ -254,8 +255,8 @@ void displayWorker() {
     buttonRightTimer=millis()+500;
     setTFTBL(true);
     if (page==0) { knobValue[knob]+=32; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-    if (page==1 && knob==0 && seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); }
-    if (page==1 && knob==1 && seq.playing) { stopPlayingSequence(); } else { startPlayingSequence(); }
+    if (page==1 && knob==0) { if (seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); } }
+    if (page==1 && knob==1) { if (seq.playing) { stopPlayingSequence(); } else { startPlayingSequence(); } }
     if (page==2) { knobValue[knob]+=32; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
     if (page==3) { knobValue[knob+8]+=32; setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); } }
 
