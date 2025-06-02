@@ -7,8 +7,8 @@ XPT2046_Touchscreen ts(0,5);
 #include <Encoder.h>
 Encoder knobLeft(24,9);
 Encoder knobRight(28,25);
-#define buttonLeft 6
-#define buttonRight 29
+#define gpioButtonLeft 6
+#define gpioButtonRight 29
 
 const char *knobText[2][32]={{"Attack","Hold","Decay","Sustain","Release","Arpeggiator Mode","Arpeggiator Speed","Glissando Speed",\
   "VCO 1 Waveform","VCO 2 Waveform","VCO Ratio","VCO Add/Multiply","VCO 2 Shift","VCO Level","","",\
@@ -232,8 +232,8 @@ void initDisplay() {
   ts.begin(SPI1);
   ts.setRotation(1);
 
-  pinMode(buttonLeft,INPUT_PULLUP);
-  pinMode(buttonRight,INPUT_PULLUP);
+  pinMode(gpioButtonLeft,INPUT_PULLUP);
+  pinMode(gpioButtonRight,INPUT_PULLUP);
 
   for (uint8_t i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); }
   setDisplay(); }
@@ -245,20 +245,22 @@ void displayWorker() {
     setTFTBL(true);
     TS_Point p=ts.getPoint(); }
 
-  static uint64_t buttonLeftTimer;
-  if (!digitalRead(buttonLeft) && millis()>=buttonLeftTimer) {
-    buttonLeftTimer=millis()+500;
-    setTFTBL(true); page+=1; setDisplay(); }
+  static uint64_t buttonLeftTimer; static bool oldButtonLeft=false;
+  bool buttonLeft=!digitalRead(gpioButtonLeft);
+  if (buttonLeft!=oldButtonLeft && millis()>=buttonLeftTimer) {
+    buttonLeftTimer=millis()+50; oldButtonLeft=buttonLeft;
+    if (buttonLeft) { setTFTBL(true); page+=1; setDisplay(); } }
 
-  static uint64_t buttonRightTimer;
-  if (!digitalRead(buttonRight) && millis()>=buttonRightTimer) {
-    buttonRightTimer=millis()+500;
-    setTFTBL(true);
-    if (page==0) { knobValue[knob]+=32; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-    if (page==1 && knob==0) { if (seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); } }
-    if (page==1 && knob==1) { if (seq.playing) { stopPlayingSequence(); } else { startPlayingSequence(); } }
-    if (page==2) { knobValue[knob]+=32; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-    if (page==3) { knobValue[knob+8]+=32; setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); } }
+  static uint64_t buttonRightTimer; static bool oldButtonRight=false;
+  bool buttonRight=!digitalRead(gpioButtonRight);
+  if (buttonRight!=oldButtonRight && millis()>=buttonRightTimer) {
+    buttonRightTimer=millis()+50; oldButtonRight=buttonRight;
+    if (buttonRight) { setTFTBL(true);
+      if (page==0) { knobValue[knob]+=32; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+      if (page==1 && knob==0) { if (seq.recording) { stopRecordingSequence(); } else { startRecordingSequence(); } }
+      if (page==1 && knob==1) { if (seq.playing) { stopPlayingSequence(); } else { startPlayingSequence(); } }
+      if (page==2) { knobValue[knob]+=32; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+      if (page==3) { knobValue[knob+8]+=32; setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); } } }
 
   static long oldLeft=0,oldRight=0;
   long newLeft=knobLeft.read()/4;
