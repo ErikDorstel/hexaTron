@@ -53,7 +53,7 @@ void setAHDSR(bool clear=true) {
 
 void setVCO(bool clear=true) {
   static uint16_t oldx;
-  uint16_t x=knobValue[8]+knobValue[9]+knobValue[10]+knobValue[11];
+  uint16_t x=knobValue[8]+knobValue[9]+knobValue[10]+knobValue[11]+knobValue[12];
   if (oldx==x && clear) { return; }
   if (clear) {
     for (uint16_t x=0;x<480;x++) {
@@ -69,13 +69,14 @@ void setVCO(bool clear=true) {
     if ((knobValue[8]&96)==64) { if (x<120) { y1=1; } else if (x<240) { y1=-1; } else if (x<360) { y1=1; } else { y1=-1; } } else
     if ((knobValue[8]&96)==96) { y1=(float)x/60; if (x>=60) { y1=2-y1; } if (x>=180) { y1=-2-y1; } if (x>=300) { y1=2-y1; } if (x>=420) { y1=-2-y1; } }
     float y2=0;
-    if ((knobValue[9]&96)==0) { y2=sin(12.56637*x/480); } else
-    if ((knobValue[9]&96)==32) { y2=(float)x/120; if (x>=120) { y2-=2; } if (x>=360) { y2-=2; } } else
-    if ((knobValue[9]&96)==64) { if (x<120) { y2=1; } else if (x<240) { y2=-1; } else if (x<360) { y2=1; } else { y2=-1; } } else
-    if ((knobValue[9]&96)==96) { y2=(float)x/60; if (x>=60) { y2=2-y2; } if (x>=180) { y2=-2-y2; } if (x>=300) { y2=2-y2; } if (x>=420) { y2=-2-y2; } }
+    float vco2=atan((float)knobValue[12]/127*12-6)/atan(6.0)/4.0+0.75;
+    if ((knobValue[9]&96)==0) { y2=sin(12.56637*vco2*x/480); } else
+    if ((knobValue[9]&96)==32) { y2=(float)x/(120/vco2); if (x>=120/vco2) { y2-=2; } if (x>=360/vco2) { y2-=2; } } else
+    if ((knobValue[9]&96)==64) { if (x<120/vco2) { y2=1; } else if (x<240/vco2) { y2=-1; } else if (x<360/vco2) { y2=1; } else { y2=-1; } } else
+    if ((knobValue[9]&96)==96) { y2=(float)x/(60/vco2); if (x>=60/vco2) { y2=2-y2; } if (x>=180/vco2) { y2=-2-y2; } if (x>=300/vco2) { y2=2-y2; } if (x>=420/vco2) { y2=-2-y2; } }
     float ya=(y1*(1.0-((float)knobValue[10]/127.0)))+(y2*((float)knobValue[10]/127.0));
     float ym=(y1*y2);
-    float ys=(ya*(1.0-((float)knobValue[11]/127)))+(ym*((float)knobValue[11]/127.0));
+    float ys=(ya*(1.0-((float)knobValue[11]/127.0)))+(ym*((float)knobValue[11]/127.0));
     oldys[x]=ys;
     tft.drawPixel(x,199-ys*100,TFT_SKYBLUE);
     tft.drawPixel(x,200-ys*100,TFT_SKYBLUE);
