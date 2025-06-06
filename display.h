@@ -266,10 +266,10 @@ void displayWorker() {
   static long oldLeft=0,oldRight=0;
   long newLeft=knobLeft.read()/4;
   long newRight=knobRight.read()/4;
-  if (oldLeft!=newLeft) { knob+=newLeft-oldLeft; setTFTBL(true); setDisplay(); }
-  if (page==0 && oldRight!=newRight) { knobValue[knob]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-  if (page==2 && oldRight!=newRight) { knobValue[knob]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-  if (page==3 && oldRight!=newRight) { knobValue[knob+8]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
+  if (oldLeft!=newLeft) { if (newLeft>oldLeft) { knob+=1; } else { knob-=1; } setTFTBL(true); setDisplay(); }
+  if (page==0 && oldRight!=newRight) { if (newRight>oldRight) { knobValue[knob]+=1; } else { knobValue[knob]-=1; } setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+  if (page==2 && oldRight!=newRight) { if (newRight>oldRight) { knobValue[knob]+=1; } else { knobValue[knob]-=1; } setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+  if (page==3 && oldRight!=newRight) { if (newRight>oldRight) { knobValue[knob+8]+=1; } else { knobValue[knob+8]-=1; } setTFTBL(true); setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
   oldLeft=newLeft; oldRight=newRight;
 
   if (ethConfigured) {
