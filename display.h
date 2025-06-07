@@ -4,12 +4,6 @@ TFT_eSPI tft=TFT_eSPI();
 #include <XPT2046_Touchscreen.h>
 XPT2046_Touchscreen ts(0,5);
 
-#include <Encoder.h>
-Encoder knobLeft(24,9);
-Encoder knobRight(28,25);
-#define gpioButtonLeft 6
-#define gpioButtonRight 29
-
 const char *knobText[2][32]={{"Attack","Hold","Decay","Sustain","Release","Arpeggiator Mode","Arpeggiator Speed","Glissando Speed",\
   "VCO 1 Waveform","VCO 2 Waveform","VCO Ratio","VCO Add/Multiply","VCO 2 Shift","VCO Level","","",\
   "LFO VCO Waveform","LFO VCO Phase Start","LFO VCO Level","LFO VCO Frequency","VCF Bypass","VCF Lowpass","VCF Bandpass","VCF Highpass",\
@@ -233,9 +227,6 @@ void initDisplay() {
   ts.begin(SPI1);
   ts.setRotation(1);
 
-  pinMode(gpioButtonLeft,INPUT_PULLUP);
-  pinMode(gpioButtonRight,INPUT_PULLUP);
-
   for (uint8_t i=0;i<32;i++) { MIDIsetControl(0,i,knobValue[i]); }
   setDisplay(); }
 
@@ -264,12 +255,12 @@ void displayWorker() {
       if (page==3) { knobValue[knob+8]+=32; setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); } } }
 
   static long oldLeft=0,oldRight=0;
-  long newLeft=knobLeft.read()/4;
-  long newRight=knobRight.read()/4;
-  if (oldLeft!=newLeft) { if (newLeft>oldLeft) { knob+=1; } else { knob-=1; } setTFTBL(true); setDisplay(); }
-  if (page==0 && oldRight!=newRight) { if (newRight>oldRight) { knobValue[knob]+=1; } else { knobValue[knob]-=1; } setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-  if (page==2 && oldRight!=newRight) { if (newRight>oldRight) { knobValue[knob]+=1; } else { knobValue[knob]-=1; } setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-  if (page==3 && oldRight!=newRight) { if (newRight>oldRight) { knobValue[knob+8]+=1; } else { knobValue[knob+8]-=1; } setTFTBL(true); setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
+  long newLeft=enc.value[0]/4;
+  long newRight=enc.value[1]/4;
+  if (oldLeft!=newLeft) { knob+=newLeft-oldLeft; setTFTBL(true); setDisplay(); }
+  if (page==0 && oldRight!=newRight) { knobValue[knob]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+  if (page==2 && oldRight!=newRight) { knobValue[knob]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+  if (page==3 && oldRight!=newRight) { knobValue[knob+8]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
   oldLeft=newLeft; oldRight=newRight;
 
   if (ethConfigured) {

@@ -1,5 +1,6 @@
 const bool logging=true;
 
+#include "encoder.h"
 #include "synthesizer.h"
 #include "sequencer.h"
 #include "eth.h"
@@ -8,6 +9,7 @@ const bool logging=true;
 void setup() {
   if (logging) { Serial.begin(115200); }
 
+  initEncoder();
   initSynth();
   initEth();
   initDisplay(); }
