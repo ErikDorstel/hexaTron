@@ -254,23 +254,28 @@ void displayWorker() {
       if (page==2) { knobValue[knob]+=32; setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
       if (page==3) { knobValue[knob+8]+=32; setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); } } }
 
-  static long oldLeft=0,oldRight=0;
+  static long oldLeft=0,oldRight=0; static uint64_t rightTimer=millis();
   long newLeft=enc.value[0]/4;
   long newRight=enc.value[1]/4;
   if (oldLeft!=newLeft) { knob+=newLeft-oldLeft; setTFTBL(true); setDisplay(); }
-  if (page==0 && oldRight!=newRight) { knobValue[knob]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-  if (page==2 && oldRight!=newRight) { knobValue[knob]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
-  if (page==3 && oldRight!=newRight) { knobValue[knob+8]+=newRight-oldRight; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
-  oldLeft=newLeft; oldRight=newRight;
+  int16_t rightVelo=newRight-oldRight; if (rightVelo!=0) { if (millis()-rightTimer<20) { rightVelo*=2; } if (millis()-rightTimer<10) { rightVelo*=4; }
+    if (page==0) { knobValue[knob]+=rightVelo; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+    if (page==2) { knobValue[knob]+=rightVelo; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
+    if (page==3) { knobValue[knob+8]+=rightVelo; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
+    rightTimer=millis(); }
+    oldLeft=newLeft; oldRight=newRight;
 
+  static uint64_t udpTimer=millis();
   if (ethConfigured) {
     if (Udp.parsePacket()==2) {
       char receiveBuffer[2];
       Udp.read(receiveBuffer,2);
       knob=receiveBuffer[0];
+      uint8_t udpVelo=1; if (millis()-udpTimer<20) { udpVelo=2; } if (millis()-udpTimer<10) { udpVelo=4; }
       if (receiveBuffer[1]==1) { knobValue[knob]+=32; } else
-      if (receiveBuffer[1]==2) { knobValue[knob]+=1; } else
-      if (receiveBuffer[1]==3) { knobValue[knob]-=1; }
+      if (receiveBuffer[1]==2) { knobValue[knob]+=udpVelo; } else
+      if (receiveBuffer[1]==3) { knobValue[knob]-=udpVelo; }
       if (page==2 && knob<5) { setTFTBL(true); setDisplay(true); MIDIsetControl(0,knob,knobValue[knob]); } else
       if (page==3 && knob>7 && knob<13) { knob-=8; setTFTBL(true); setDisplay(true); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
-      else { page=0; setTFTBL(true); setDisplay(true); MIDIsetControl(0,knob,knobValue[knob]); } } } }
+      else { page=0; setTFTBL(true); setDisplay(true); MIDIsetControl(0,knob,knobValue[knob]); }
+      udpTimer=millis(); } } }
