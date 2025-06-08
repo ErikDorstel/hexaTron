@@ -263,7 +263,7 @@ void displayWorker() {
     if (page==2) { knobValue[knob]+=rightVelo; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob,knobValue[knob]); }
     if (page==3) { knobValue[knob+8]+=rightVelo; setTFTBL(true); setDisplay(); MIDIsetControl(0,knob+8,knobValue[knob+8]); }
     rightTimer=millis(); }
-    oldLeft=newLeft; oldRight=newRight;
+  oldLeft=newLeft; oldRight=newRight;
 
   static uint64_t udpTimer=millis();
   if (ethConfigured) {
