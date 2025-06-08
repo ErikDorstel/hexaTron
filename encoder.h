@@ -9,38 +9,34 @@ volatile struct encStruct { uint8_t seqIndex[2]; uint8_t nextCW[2]; uint8_t next
 const uint8_t encSequence[6]={1,0,2,3,1,0};
 
 void enc0ISR() {
-  uint8_t encIndex=0; uint8_t encInput=0;
-  if (digitalRead(gpioEnc0A)) { encInput|=2; }
-  if (digitalRead(gpioEnc0B)) { encInput|=1; }
+  uint8_t encInput=(digitalRead(gpioEnc0A)<<1)+digitalRead(gpioEnc0B);
 
-  if (encInput==enc.nextCW[encIndex]) {
-    if (enc.seqIndex[encIndex]<4) { enc.seqIndex[encIndex]+=1; } else { enc.seqIndex[encIndex]=1; }
-    enc.nextCW[encIndex]=encSequence[enc.seqIndex[encIndex]+1];
-    enc.nextCCW[encIndex]=encSequence[enc.seqIndex[encIndex]-1];
-    enc.value[encIndex]+=1; } else
+  if (encInput==enc.nextCW[0]) {
+    if (enc.seqIndex[0]<4) { enc.seqIndex[0]+=1; } else { enc.seqIndex[0]=1; }
+    enc.nextCW[0]=encSequence[enc.seqIndex[0]+1];
+    enc.nextCCW[0]=encSequence[enc.seqIndex[0]-1];
+    enc.value[0]+=1; } else
 
-  if (encInput==enc.nextCCW[encIndex]) {
-    if (enc.seqIndex[encIndex]>1) { enc.seqIndex[encIndex]-=1; } else { enc.seqIndex[encIndex]=4; }
-    enc.nextCW[encIndex]=encSequence[enc.seqIndex[encIndex]+1];
-    enc.nextCCW[encIndex]=encSequence[enc.seqIndex[encIndex]-1];
-    enc.value[encIndex]-=1; } }
+  if (encInput==enc.nextCCW[0]) {
+    if (enc.seqIndex[0]>1) { enc.seqIndex[0]-=1; } else { enc.seqIndex[0]=4; }
+    enc.nextCW[0]=encSequence[enc.seqIndex[0]+1];
+    enc.nextCCW[0]=encSequence[enc.seqIndex[0]-1];
+    enc.value[0]-=1; } }
 
 void enc1ISR() {
-  uint8_t encIndex=1; uint8_t encInput=0;
-  if (digitalRead(gpioEnc1A)) { encInput|=2; }
-  if (digitalRead(gpioEnc1B)) { encInput|=1; }
+  uint8_t encInput=(digitalRead(gpioEnc1A)<<1)+digitalRead(gpioEnc1B);
 
-  if (encInput==enc.nextCW[encIndex]) {
-    if (enc.seqIndex[encIndex]<4) { enc.seqIndex[encIndex]+=1; } else { enc.seqIndex[encIndex]=1; }
-    enc.nextCW[encIndex]=encSequence[enc.seqIndex[encIndex]+1];
-    enc.nextCCW[encIndex]=encSequence[enc.seqIndex[encIndex]-1];
-    enc.value[encIndex]+=1; } else
+  if (encInput==enc.nextCW[1]) {
+    if (enc.seqIndex[1]<4) { enc.seqIndex[1]+=1; } else { enc.seqIndex[1]=1; }
+    enc.nextCW[1]=encSequence[enc.seqIndex[1]+1];
+    enc.nextCCW[1]=encSequence[enc.seqIndex[1]-1];
+    enc.value[1]+=1; } else
 
-  if (encInput==enc.nextCCW[encIndex]) {
-    if (enc.seqIndex[encIndex]>1) { enc.seqIndex[encIndex]-=1; } else { enc.seqIndex[encIndex]=4; }
-    enc.nextCW[encIndex]=encSequence[enc.seqIndex[encIndex]+1];
-    enc.nextCCW[encIndex]=encSequence[enc.seqIndex[encIndex]-1];
-    enc.value[encIndex]-=1; } }
+  if (encInput==enc.nextCCW[1]) {
+    if (enc.seqIndex[1]>1) { enc.seqIndex[1]-=1; } else { enc.seqIndex[1]=4; }
+    enc.nextCW[1]=encSequence[enc.seqIndex[1]+1];
+    enc.nextCCW[1]=encSequence[enc.seqIndex[1]-1];
+    enc.value[1]-=1; } }
 
 void initEncoder() {
   pinMode(gpioButtonLeft,INPUT_PULLUP); pinMode(gpioButtonRight,INPUT_PULLUP);
